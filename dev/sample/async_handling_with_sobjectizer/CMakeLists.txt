@@ -1,5 +1,5 @@
 set(SAMPLE sample.async_handling_with_sobjectizer)
-include(${CMAKE_SOURCE_DIR}/cmake/sample.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/sample.cmake)
 
 if (RESTINIO_DEP_SOBJECTIZER STREQUAL "system")
 	target_compile_definitions(${SAMPLE} PRIVATE SO_5_STATIC_LIB)

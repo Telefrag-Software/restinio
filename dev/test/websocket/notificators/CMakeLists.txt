@@ -1,5 +1,5 @@
 set(UNITTEST _unit.test.notificators)
-include(${CMAKE_SOURCE_DIR}/cmake/unittest.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/unittest.cmake)
 
 if (RESTINIO_DEP_SOBJECTIZER STREQUAL "system")
 	target_compile_definitions(${UNITTEST} PRIVATE SO_5_STATIC_LIB)

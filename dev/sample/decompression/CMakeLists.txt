@@ -1,5 +1,5 @@
 set(SAMPLE sample.decompression)
-include(${CMAKE_SOURCE_DIR}/cmake/sample.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/sample.cmake)
 
 target_include_directories(${SAMPLE} PRIVATE ${ZLIB_INCLUDE_DIRS} )
 target_link_libraries(${SAMPLE} PRIVATE ${ZLIB_LIBRARIES})

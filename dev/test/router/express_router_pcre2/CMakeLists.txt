@@ -1,5 +1,5 @@
 set(UNITTEST _unit.test.router.express_router_pcre2)
-include(${CMAKE_SOURCE_DIR}/cmake/unittest.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/unittest.cmake)
 
 TARGET_COMPILE_DEFINITIONS(${UNITTEST} PRIVATE -DPCRE2_STATIC -DPCRE2_CODE_UNIT_WIDTH=8)
 

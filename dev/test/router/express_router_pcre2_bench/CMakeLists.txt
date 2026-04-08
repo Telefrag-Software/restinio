@@ -1,5 +1,5 @@
 set(TEST_BENCH _test.router.express_router_pcre2_bench)
-include(${CMAKE_SOURCE_DIR}/cmake/testbench.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/testbench.cmake)
 
 TARGET_COMPILE_DEFINITIONS(${TEST_BENCH} PRIVATE -DPCRE2_STATIC -DPCRE2_CODE_UNIT_WIDTH=8)
 

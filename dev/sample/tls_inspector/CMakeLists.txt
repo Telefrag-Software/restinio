@@ -1,5 +1,5 @@
 set(SAMPLE sample.tls_inspector)
-include(${CMAKE_SOURCE_DIR}/cmake/sample.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/sample.cmake)
 
 TARGET_INCLUDE_DIRECTORIES(${SAMPLE} PRIVATE ${OPENSSL_INCLUDE_DIR})
 TARGET_LINK_LIBRARIES(${SAMPLE} PRIVATE ${OPENSSL_LIBRARIES})

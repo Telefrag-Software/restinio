@@ -4,4 +4,4 @@ set(UNITTEST_SRCFILES
 	std_string.cpp
 	shared_ptr_std_string.cpp)
 
-include(${CMAKE_SOURCE_DIR}/cmake/unittest.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/unittest.cmake)

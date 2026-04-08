@@ -6,7 +6,7 @@ set(UNITTEST_SRCFILES
 	part4.cpp
 	part5.cpp
 	main.cpp )
-include(${CMAKE_SOURCE_DIR}/cmake/unittest.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/unittest.cmake)
 
 TARGET_COMPILE_DEFINITIONS(${UNITTEST} PRIVATE -DPCRE2_STATIC -DPCRE2_CODE_UNIT_WIDTH=8)
 

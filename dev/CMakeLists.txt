@@ -25,6 +25,27 @@ cmake_minimum_required(VERSION 3.14)
 set(RESTINIO_LIBRARY_NAME restinio)
 project(${RESTINIO_LIBRARY_NAME}_root CXX)
 
+hunter_add_package(Boost COMPONENTS regex)
+hunter_add_package(BZip2)
+hunter_add_package(Catch2)
+hunter_add_package(expected-lite)
+hunter_add_package(fmt)
+hunter_add_package(llhttp)
+hunter_add_package(OpenSSL)
+hunter_add_package(pcre2)
+hunter_add_package(sobjectizer)
+hunter_add_package(ZLIB)
+
+if (HUNTER_ENABLED)
+    set(DEFAULT_DEPENDENCY_GET_MODE "find")
+    set(DEFAULT_ASIO_SOURCE "boost")
+    set(PACKAGE_FIND_MODE CONFIG)
+else ()
+    set(DEFAULT_DEPENDENCY_GET_MODE "local")
+    set(DEFAULT_ASIO_SOURCE "standalone")
+    set(PACKAGE_FIND_MODE MODULE)
+endif ()
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -91,23 +112,23 @@ set(RESTINIO_DEP_BOOST_ASIO "find" CACHE STRING "How to get Boost.ASIO dependenc
 set_property(CACHE RESTINIO_DEP_BOOST_ASIO PROPERTY STRINGS "system;find")
 
 # By default we assume to use an embedded version of LLHTTP.
-set(RESTINIO_DEP_LLHTTP "local" CACHE STRING "How to get llhttp (http parser) dependency)")
+set(RESTINIO_DEP_LLHTTP "${DEFAULT_DEPENDENCY_GET_MODE}" CACHE STRING "How to get llhttp (http parser) dependency)")
 set_property(CACHE RESTINIO_DEP_LLHTTP PROPERTY STRINGS "system;find;local")
 
 # By default we assume to use an embedded version of FMT.
-set(RESTINIO_DEP_FMT "local" CACHE STRING "How to get FMT dependency)")
+set(RESTINIO_DEP_FMT "${DEFAULT_DEPENDENCY_GET_MODE}" CACHE STRING "How to get FMT dependency)")
 set_property(CACHE RESTINIO_DEP_FMT PROPERTY STRINGS "system;find;local")
 
 # By default we assume to use an embedded version of expected-lite.
-set(RESTINIO_DEP_EXPECTED_LITE "local" CACHE STRING "How to get expected-lite dependency)")
+set(RESTINIO_DEP_EXPECTED_LITE "${DEFAULT_DEPENDENCY_GET_MODE}" CACHE STRING "How to get expected-lite dependency)")
 set_property(CACHE RESTINIO_DEP_EXPECTED_LITE PROPERTY STRINGS "system;find;local")
 
 # By default we assume to use an embedded version of Catch2.
-set(RESTINIO_DEP_CATCH2 "local" CACHE STRING "How to get Catch2 dependency)")
+set(RESTINIO_DEP_CATCH2 "${DEFAULT_DEPENDENCY_GET_MODE}" CACHE STRING "How to get Catch2 dependency)")
 set_property(CACHE RESTINIO_DEP_CATCH2 PROPERTY STRINGS "find;local")
 
 # By default we assume to use an embedded version of SObjectizer.
-set(RESTINIO_DEP_SOBJECTIZER "local" CACHE STRING "How to get SObjectizer dependency)")
+set(RESTINIO_DEP_SOBJECTIZER "${DEFAULT_DEPENDENCY_GET_MODE}" CACHE STRING "How to get SObjectizer dependency)")
 set_property(CACHE RESTINIO_DEP_SOBJECTIZER PROPERTY STRINGS "system;find;local")
 
 
@@ -119,7 +140,7 @@ message(STATUS "RESTINIO_DEP_EXPECTED_LITE:   ${RESTINIO_DEP_EXPECTED_LITE}")
 message(STATUS "RESTINIO_DEP_CATCH2:          ${RESTINIO_DEP_CATCH2}")
 message(STATUS "RESTINIO_DEP_SOBJECTIZER:     ${RESTINIO_DEP_SOBJECTIZER}")
 
-set(RESTINIO_ASIO_SOURCE "standalone" CACHE STRING "What source of ASIO to use (standalone, boost)")
+set(RESTINIO_ASIO_SOURCE "${DEFAULT_ASIO_SOURCE}" CACHE STRING "What source of ASIO to use (standalone, boost)")
 set(RESTINIO_ASIO_SOURCE_VALUES "standalone;boost")
 set_property(CACHE RESTINIO_ASIO_SOURCE PROPERTY STRINGS ${RESTINIO_ASIO_SOURCE_VALUES})
 
@@ -159,20 +180,20 @@ if (RESTINIO_ASIO_SOURCE STREQUAL "standalone")
     if (RESTINIO_DEP_STANDALONE_ASIO STREQUAL "find")
         message(STATUS "Finding ASIO package...")
         set(RESTINIO_ASIO_PATH_HINT ${CMAKE_CURRENT_SOURCE_DIR}/asio)
-        find_package(asio REQUIRED)
+        find_package(ASIO ${PACKAGE_FIND_MODE} REQUIRED)
         if (NOT asio_FOUND)
             message(FATAL_ERROR "Unable to find ASIO")
         endif()
     endif ()
 else ()
     if (RESTINIO_DEP_BOOST_ASIO STREQUAL "find")
-        find_package(Boost REQUIRED)
-        find_package(Boost REQUIRED COMPONENTS regex)
+        find_package(BOOST ${PACKAGE_FIND_MODE} REQUIRED)
+        find_package(BOOST ${PACKAGE_FIND_MODE} REQUIRED COMPONENTS regex)
     endif ()
 endif ()
 
 if (RESTINIO_DEP_LLHTTP STREQUAL "find")
-    find_package(llhttp REQUIRED)
+    find_package(LLHTTP ${PACKAGE_FIND_MODE} REQUIRED)
 elseif (RESTINIO_DEP_LLHTTP STREQUAL "local")
     message("========================================")
     message(STATUS "Add subdirectory nodejs/llhttp")
@@ -181,7 +202,7 @@ elseif (RESTINIO_DEP_LLHTTP STREQUAL "local")
 endif ()
 
 if (RESTINIO_DEP_FMT STREQUAL "find")
-    find_package(fmt REQUIRED)
+    find_package(FMT ${PACKAGE_FIND_MODE} REQUIRED)
 elseif (RESTINIO_DEP_FMT STREQUAL "local")
     message("========================================")
     message(STATUS "Add subdirectory fmt")
@@ -191,7 +212,7 @@ elseif (RESTINIO_DEP_FMT STREQUAL "local")
 endif ()
 
 if (RESTINIO_DEP_EXPECTED_LITE STREQUAL "find")
-    find_package(expected-lite REQUIRED)
+    find_package(EXPECTED-LITE ${PACKAGE_FIND_MODE} REQUIRED)
 elseif (RESTINIO_DEP_EXPECTED_LITE STREQUAL "local")
     message("========================================")
     message(STATUS "Add subdirectory expected-lite")
@@ -208,7 +229,7 @@ if (RESTINIO_WITH_SOBJECTIZER)
 
         set(RESTINIO_SOBJECTIZER_LIB_LINK_NAME "sobjectizer::StaticLib")
     elseif (RESTINIO_DEP_SOBJECTIZER STREQUAL "find")
-        find_package(sobjectizer CONFIG REQUIRED)
+        find_package(SOBJECTIZER ${PACKAGE_FIND_MODE} REQUIRED)
 
         set(RESTINIO_SOBJECTIZER_LIB_LINK_NAME "sobjectizer::StaticLib")
     elseif (RESTINIO_DEP_SOBJECTIZER STREQUAL "system")
@@ -229,30 +250,57 @@ if (RESTINIO_TEST OR RESTINIO_SAMPLE OR RESTINIO_BENCHMARK)
     message("========================================")
 endif()
 
-find_package(ZLIB)
+find_package(ZLIB ${PACKAGE_FIND_MODE})
 if (ZLIB_FOUND)
+  if (HUNTER_ENABLED)
+    set(ZLIB_LIBRARIES ZLIB::ZLIBSTATIC)
+  endif ()
   message(STATUS "ZLIB include dir: ${ZLIB_INCLUDE_DIRS}")
   message(STATUS "ZLIB libraries: ${ZLIB_LIBRARIES}")
 endif ()
 
-find_package(OpenSSL)
+find_package(OPENSSL ${PACKAGE_FIND_MODE})
 IF ( OPENSSL_FOUND )
   message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
   message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
 ENDIF ( OPENSSL_FOUND )
 
 # PCRE
-find_package(PCRE)
+find_package(PCRE ${PACKAGE_FIND_MODE})
 IF (PCRE_FOUND)
   message( STATUS "PCRE_LIBRARIES='" ${PCRE_LIBRARIES} "'" )
   message( STATUS "PCRE_INCLUDE_DIRS='" ${PCRE_INCLUDE_DIRS} "'" )
 ENDIF ()
 
 # PCRE2
-find_package(PCRE2)
+find_package(PCRE2 ${PACKAGE_FIND_MODE})
 IF (PCRE2_FOUND)
-  message( STATUS "PCRE2_LIBRARIES='" ${PCRE2_LIBRARIES} "'" )
-  message( STATUS "PCRE2_INCLUDE_DIRS='" ${PCRE2_INCLUDE_DIRS} "'" )
+  if (TARGET pcre2::pcre2-8-static)
+    set(PCRE2_LIBRARY pcre2::pcre2-8-static)
+
+    get_target_property(
+        PCRE2_INCLUDE_DIR
+        pcre2::pcre2-8-static
+        INTERFACE_INCLUDE_DIRECTORIES
+    )
+
+    set(PCRE2_LIBRARIES ${PCRE2_LIBRARY})
+    set(PCRE2_INCLUDE_DIRS ${PCRE2_INCLUDE_DIR})
+  elseif (TARGET pcre2::pcre2-8)
+    set(PCRE2_LIBRARY pcre2::pcre2-8)
+
+    get_target_property(
+        PCRE2_INCLUDE_DIR
+        pcre2::pcre2-8
+        INTERFACE_INCLUDE_DIRECTORIES
+    )
+
+    set(PCRE2_LIBRARIES ${PCRE2_LIBRARY})
+    set(PCRE2_INCLUDE_DIRS ${PCRE2_INCLUDE_DIR})
+  else ()
+    message( STATUS "PCRE2_LIBRARIES='" ${PCRE2_LIBRARIES} "'" )
+    message( STATUS "PCRE2_INCLUDE_DIRS='" ${PCRE2_INCLUDE_DIRS} "'" )
+  endif()
 ENDIF ()
 
 # ====================================================================
@@ -328,7 +376,7 @@ message("========================================")
 
 if (RESTINIO_TEST)
     if (RESTINIO_DEP_CATCH2 STREQUAL "find")
-        find_package(Catch2 REQUIRED)
+        find_package(CATCH2 ${PACKAGE_FIND_MODE} REQUIRED)
     elseif (RESTINIO_DEP_CATCH2 STREQUAL "local")
         message("========================================")
         message(STATUS "Add subdirectory catch2")
@@ -342,7 +390,11 @@ if (RESTINIO_TEST)
         message("========================================")
     endif ()
 
-    include(Catch)
+    if (HUNTER_ENABLED)
+        include(${CATCH2_DIR}/Catch.cmake)
+    else ()
+        include(Catch.cmake)
+    endif()
 
     enable_testing()
     add_subdirectory(test)

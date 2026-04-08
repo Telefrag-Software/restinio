@@ -17,5 +17,5 @@ set(UNITTEST_SRCFILES
 	transfer-encoding.cpp
 	host.cpp
 )
-include(${CMAKE_SOURCE_DIR}/cmake/unittest.cmake)
+include(${CMAKE_SOURCE_DIR}/dev/cmake/unittest.cmake)
 
